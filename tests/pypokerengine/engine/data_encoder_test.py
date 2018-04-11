@@ -8,6 +8,7 @@ from pypokerengine.engine.poker_constants import PokerConstants as Const
 from pypokerengine.engine.data_encoder import DataEncoder
 from pypokerengine.engine.round_manager import RoundManager
 
+
 class DataEncoderTest(BaseUnitTest):
 
     def test_encode_player_without_holecard(self):
@@ -33,7 +34,7 @@ class DataEncoderTest(BaseUnitTest):
     def test_encode_pot(self):
         players = setup_players_for_pot()
         hsh = DataEncoder.encode_pot(players)
-        main_pot  = hsh["main"]
+        main_pot = hsh["main"]
         side_pot1 = hsh["side"][0]
         side_pot2 = hsh["side"][1]
         self.eq(22, main_pot["amount"])
@@ -45,8 +46,8 @@ class DataEncoderTest(BaseUnitTest):
         self.eq(['uuid1', 'uuid3'], side_pot2['eligibles'])
 
     def test_encofe_game_information(self):
-        config = { "initial_stack":100, "max_round":10, "small_blind_amount":5,\
-                "ante":1, "blind_structure": {1: {"ante": 3, "small_blind": 10} } }
+        config = {"initial_stack": 100, "max_round": 10, "small_blind_amount": 5, \
+                  "ante": 1, "blind_structure": {1: {"ante": 3, "small_blind": 10}}}
         seats = setup_seats()
         hsh = DataEncoder.encode_game_information(config, seats)
         self.eq(3, hsh["player_num"])
@@ -78,6 +79,7 @@ class DataEncoderTest(BaseUnitTest):
     def test_encode_street(self):
         def check(arg, expected):
             self.eq(expected, DataEncoder.encode_street(arg)["street"])
+
         check(Const.Street.PREFLOP, "preflop")
         check(Const.Street.FLOP, "flop")
         check(Const.Street.TURN, "turn")
@@ -123,17 +125,20 @@ class DataEncoderTest(BaseUnitTest):
         self.eq(state["round_count"], hsh["round_count"])
         self.eq(state["small_blind_amount"], hsh["small_blind_amount"])
 
+
 def setup_player():
     player = setup_player_with_payinfo(0, "hoge", 50, PayInfo.FOLDED)
     player.add_holecard([Card.from_id(1), Card.from_id(2)])
     player.add_action_history(Const.Action.CALL, 50)
     return player
 
+
 def setup_player_with_payinfo(idx, name, amount, status):
     player = Player("uuid%d" % idx, 100, name)
     player.pay_info.amount = amount
     player.pay_info.status = status
     return player
+
 
 def setup_players_for_pot():
     p1 = setup_player_with_payinfo(0, "A", 5, PayInfo.ALLIN)
@@ -143,15 +148,17 @@ def setup_players_for_pot():
     p5 = setup_player_with_payinfo(4, "E", 2, PayInfo.FOLDED)
     return [p1, p2, p3, p4, p5]
 
+
 def setup_seats():
     seats = Seats()
     for _ in range(3):
-      seats.sitdown(setup_player())
+        seats.sitdown(setup_player())
     return seats
+
 
 def setup_table():
     table = Table()
-    players = [Player("uuid%d"%i, 100, "hoge") for i in range(3)]
+    players = [Player("uuid%d" % i, 100, "hoge") for i in range(3)]
     table.seats.players = players
     table.add_community_card(Card.from_id(1))
     table.dealer_btn = 2
@@ -166,6 +173,7 @@ def setup_table():
     p2.add_action_history(Const.Action.RAISE, 5, 5)
     return table
 
+
 def setup_round_state():
     return {
         "street": 1,
@@ -174,4 +182,3 @@ def setup_round_state():
         "small_blind_amount": 4,
         "table": setup_table()
     }
-
